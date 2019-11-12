@@ -97,7 +97,7 @@ export default {
       if (!user) {
         return handleError.serverError(404, "User not found");
       }
-      const token = uuidV4();
+      const token = uuidV4() + uuidV4();
       const description = "peticion desde el email";
       const data = { token, description, user: user._id };
       return ResetController.createReset(data);

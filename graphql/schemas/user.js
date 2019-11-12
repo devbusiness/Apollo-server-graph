@@ -33,7 +33,7 @@ export default gql`
     _id: ID!
     user: ID
     times: Int
-    desctiption: String
+    description: String
     token: String
     createdAt: DateTime
     updatedAt: DateTime
