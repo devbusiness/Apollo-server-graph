@@ -25,7 +25,7 @@ export default gql`
     password: String
     email: String!
     createdAt: DateTime
-    resetPassword: [TokenPasswordReset!]
+    resetPassword: TokenPasswordReset
     updatedAt: DateTime
   }
 

@@ -15,7 +15,7 @@ const server = new ApolloServer({
   playground: {
     settings: {
       "editor.cursorShape": "line",
-      "editor.theme": "dark",
+      "editor.theme": "light",
       "editor.fontFamily": "Victor-Mono"
     }
   },

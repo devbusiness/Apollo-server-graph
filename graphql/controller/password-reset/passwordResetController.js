@@ -16,16 +16,9 @@ export default {
     }
   },
   //falta por terminar
-  getResetPassword: async id => {
+  getResetPassword: async userId => {
     try {
-      const reset = await Reset.findOne({ user: data.user });
-      if (!reset) {
-        data.times = 1;
-        const sending = await Reset.create(data);
-        return await sending.save();
-      }
-      data.times = reset.times + 1;
-      return await Reset.findByIdAndUpdate(reset._id, data);
+      return await Reset.findOne({ user: userId });
     } catch (error) {
       console.log(error);
       return error;

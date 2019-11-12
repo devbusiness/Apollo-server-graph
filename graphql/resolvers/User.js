@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { pipe, __ } from "ramda";
 // import validateShema from "../controller/user/validationSchema";
 import Joi from ".././usefull/joiValidator";
-
+import Reset from "../controller/password-reset/passwordResetController";
 import bcrypt from "bcrypt";
 import handleError from "../usefull/errorHandler";
 import errorHandler from "../usefull/errorHandler";
@@ -64,5 +64,14 @@ export default {
       }
     }
   },
-  resetPassword: async () => {}
+  User: {
+    resetPassword: async ({ id }) => {
+      try {
+        const resetPassword = await Reset.getResetPassword(id);
+        return resetPassword;
+      } catch (error) {
+        return error;
+      }
+    }
+  }
 };
