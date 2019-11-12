@@ -1,11 +1,10 @@
 import { gql } from "apollo-server-express";
-
 export default gql`
   #Query#
 
   type Query {
     getUsers: [User]!
-    getUser(id: ID): User
+    getUser(id: ID!): User
   }
 
   #Muation#
@@ -13,23 +12,38 @@ export default gql`
   type Mutation {
     createUser(input: createUserInput!): userCreatedPayload!
     updateUser(input: updateUserInput!): User
-    signin(input: signinInput): userCreatedPayload
+    signin(input: signinInput): userCreatedPayload!
+    SendEmailToRecoverPassword(email: String!): TokenPasswordReset!
   }
   #types#
 
   type User implements Node {
-    id: ID!
+    _id: ID!
     name: String
     last_name: String
     username: String
     password: String
+    email: String!
+    createdAt: DateTime
+    resetPassword: [TokenPasswordReset!]
+    updatedAt: DateTime
+  }
+
+  type TokenPasswordReset implements Node {
+    _id: ID!
+    user: ID
+    times: Int
+    desctiption: String
+    token: String
     createdAt: DateTime
     updatedAt: DateTime
   }
+
   type userCreatedPayload {
-    user: User!
-    token: String!
+    user: User
+    token: String
   }
+
   # inputs #
 
   input createUserInput {
@@ -37,6 +51,7 @@ export default gql`
     last_name: String
     username: String!
     password: String!
+    email: String!
     confirmPassword: String!
   }
   input signinInput {
@@ -45,10 +60,10 @@ export default gql`
   }
   input updateUserInput {
     id: ID!
-    name: String!
+    name: String
     last_name: String
     username: String
-    password: String
-    confirmPassword: String
+    # password: String
+    # confirmPassword: String
   }
 `;

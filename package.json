@@ -9,7 +9,6 @@
   },
   "author": "Cesar Berrio",
   "license": "ISC",
-
   "dependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/polyfill": "^7.6.0",
@@ -22,7 +21,8 @@
     "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.7",
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

@@ -1,5 +1,5 @@
 import User from "./user";
-import Interface from "./useful/interface";
-import scalarTypes from "./useful/scalarTypes";
+import Interface from "./utilSchema/interface";
+import scalarTypes from "./utilSchema/scalarTypes";
 
 export default [User, Interface, scalarTypes];

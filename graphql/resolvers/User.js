@@ -1,101 +1,68 @@
 import jwt from "jsonwebtoken";
-import {
-  validateShema,
-  validateShemaUpdate,
-  validateSignin
-} from "../controller/user/validationSchema";
-import { transform } from "../usefull";
+import { pipe, __ } from "ramda";
+// import validateShema from "../controller/user/validationSchema";
+import Joi from ".././usefull/joiValidator";
+
 import bcrypt from "bcrypt";
 import handleError from "../usefull/errorHandler";
 import errorHandler from "../usefull/errorHandler";
-
-const transformData = data =>
-  transform({ _id: "id" }, ["__v", "password"])(data);
 
 export default {
   Query: {
     getUsers: async (root, args, { models }) => {
       try {
-        return (await models.User.getUsers().lean()).map(transformData);
+        return await models.User.getUsers();
       } catch (error) {
-        return handleError.serverError();
+        console.log(error);
+        return { error };
       }
     },
-    getUser: async (root, { id }, { models, me }) => {
+    getUser: async (root, { id }, { models }) => {
       try {
-        console.log(me);
-        const user = await models.User.getUser({ _id: id });
-        if (user === null) {
-          return handleError.serverError(400, "User not Found");
-        }
-        return { ...transformData(user) };
+        return await models.User.getUser({ _id: id });
       } catch (error) {
         return handleError.serverError();
       }
     }
   },
+
   Mutation: {
     createUser: async (root, { input }, { models }) => {
       try {
-        const newUser = input;
-        const validate = validateShema(newUser);
-        if (validate !== null) {
-          return errorHandler.userInputError(validate);
-        }
-        const token = jwt.sign({ ...userCreated }, process.env.SECRET, {
-          expiresIn: process.env.expiresIn
-        });
-        newUser.password = bcrypt.hashSync(newUser.confirmPassword, 10);
-        const userCreated = transformData(
-          await models.User.createUser(newUser)
-        );
-        return { user: userCreated, token };
+        // const validate = Joi(input, "userSave");
+        // if (validate !== null) {
+        //   return errorHandler.userInputError(validate);
+        // }
+        const user = await models.User.createUser(input);
+        console.log(user);
+        return user;
       } catch (error) {
-        return handleError.serverError();
+        console.log(error);
       }
     },
-    updateUser: async (root, { input }, { models }) => {
+    updateUser: async (root, { input }, { models, me }) => {
       try {
-        const validate = validateShemaUpdate(input);
-        if (validate !== null) {
-          return errorHandler.userInputError(validate);
-        }
-        if (input.password) {
-          userUpdated.password = bcrypt.hashSync(input.password, 10);
-        }
-        const userUpdated = transformData(
-          await models.User.updateUser({ _id: input.id }, input)
-        );
-        return { ...userUpdated };
+        return await models.User.updateUser(me.id, input);
       } catch (error) {
-        return handleError.serverError();
+        console.log(error);
+        return { status: false, error };
       }
     },
+
     signin: async (root, { input }, { models }) => {
       try {
-        const validate = validateSignin(input);
-        if (validate !== null) {
-          return errorHandler.userInputError(validate);
-        }
-        const user = await models.User.getUser({ username: input.username });
-        if (user) {
-          if (bcrypt.compareSync(input.password, user.password)) {
-            const userLogged = transformData(user);
-            const token = jwt.sign(
-              { id: user.id, username: user.username, name: user.name },
-              process.env.SECRET,
-              {
-                expiresIn: process.env.expiresIn
-              }
-            );
-            return { user: userLogged, token };
-          }
-          return handleError.serverError(409, "Credential doesn't match");
-        }
-        return handleError.serverError(404, "User not found");
+        return await models.User.login(input);
+      } catch (error) {
+        return handleError.serverError();
+      }
+    },
+    SendEmailToRecoverPassword: async (root, email, { models }) => {
+      try {
+        return await models.User.sendEmailToRecoverPassword(email);
       } catch (error) {
         return handleError.serverError();
       }
     }
-  }
+  },
+  resetPassword: async () => {}
 };

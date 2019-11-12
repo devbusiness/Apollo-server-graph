@@ -11,7 +11,16 @@ const app = express();
 const server = new ApolloServer({
   typeDefs: schemas,
   resolvers,
-  context
+  context,
+  playground: {
+    settings: {
+      "editor.cursorShape": "line",
+      "editor.theme": "dark",
+      "editor.fontFamily": "Victor-Mono"
+    }
+  },
+  introspection: true,
+  tracing: true
 });
 
 server.applyMiddleware({ app, path: "/graphql" });

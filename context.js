@@ -3,10 +3,12 @@ import models from "./graphql/controller";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 const getMe = async req => {
-  const token = req.headers["authorization"];
+  const token = req.headers["authorization"]
+    ? req.headers["authorization"].replace(/JWT|Bearer/i, "").trim()
+    : null;
   if (token) {
     try {
-      return await jwt.verify(token, process.env.SECRET);
+      return await jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
       throw new AuthenticationError(
         "Your Session has expired, Sign in Again..!"
@@ -19,7 +21,7 @@ const context = async ({ req }) => {
   return {
     models,
     me,
-    secret: process.env.SECRET
+    secret: process.env.JWT_SECRET
   };
 };
 export default context;
