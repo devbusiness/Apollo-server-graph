@@ -5,6 +5,7 @@ export default gql`
   extend type Query {
     getUsers: [User]!
     getUser(id: ID!): User
+    getMe: User
   }
 
   #Muation#
@@ -14,6 +15,7 @@ export default gql`
     updateUser(input: updateUserInput!): User
     signin(input: signinInput): userCreatedPayload!
     SendEmailToRecoverPassword(email: String!): TokenPasswordReset!
+    recoverPassword(input: RecoverPasswordInput!): userCreatedPayload!
   }
   #types#
 
@@ -44,6 +46,13 @@ export default gql`
     email: String!
     confirmPassword: String!
   }
+
+  input RecoverPasswordInput {
+    token: String!
+    newPassword: String!
+    password: String!
+  }
+
   input signinInput {
     username: String!
     password: String!

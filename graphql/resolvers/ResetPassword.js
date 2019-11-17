@@ -2,13 +2,9 @@ export default {
   Query: {
     getResetPasswordBeforeChange: async (root, { token }, { models }, info) => {
       try {
-        const validateRestore = await models.Reset.getResetPasswordBeforeChange(
-          token
-        );
-        console.log(validateRestore);
-        return validateRestore;
+        return await models.Reset.getResetPasswordBeforeChange(token);
       } catch (error) {
-        return { error: "Server internal erro" };
+        return { error: "Server internal error..!" };
       }
     }
   }

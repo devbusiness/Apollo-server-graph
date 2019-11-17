@@ -1,4 +1,8 @@
-import { ApolloError, UserInputError } from "apollo-server-express";
+import {
+  ApolloError,
+  UserInputError,
+  AuthenticationError
+} from "apollo-server-express";
 export default {
   serverError: (code, message) =>
     new ApolloError(message || "Internal Server Error", code || "500"),
@@ -8,5 +12,6 @@ export default {
       {
         invalidArgs: validate
       }
-    )
+    ),
+  authenticationError: () => new authenticationError()
 };

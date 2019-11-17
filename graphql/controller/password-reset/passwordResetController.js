@@ -1,6 +1,26 @@
 import Reset from "./passwordResetModel";
 import { getTime, differenceInHours } from "date-fns";
 import { pipe, comparator } from "ramda";
+const validTime = (fn, code) =>
+  pipe(
+    time => comparator((x, y) => x <= y)(time, 24),
+    num =>
+      num === -1
+        ? {
+            user_id: code.user,
+            valid: true,
+            token: code.token,
+            message: "Your code alive..!"
+          }
+        : {
+            user_id: !code.user ? null : code.user,
+            valid: false,
+            token: !code.token ? null : "Your last token was " + code.token,
+            message: !code.user
+              ? "You never has generated any token..!"
+              : "Your code has expired..!"
+          }
+  )(fn);
 export default {
   createReset: async data => {
     try {
@@ -32,30 +52,25 @@ export default {
       if (typeof code === "undefined" || !code) {
         return { valid: false, message: "this user doesn't exist" };
       } else {
-        return pipe(
-          time => comparator((x, y) => x <= y)(time, 24),
-          num =>
-            num === -1
-              ? {
-                  user_id: code.user,
-                  valid: true,
-                  token: code.token,
-                  message: "Your code alive..!"
-                }
-              : {
-                  user_id: !code.user ? null : code.user,
-                  valid: false,
-                  token: !code.token
-                    ? null
-                    : "Your last token was " + code.token,
-                  message: !code.user
-                    ? "You never has generated any token..!"
-                    : "Your code has expired..!"
-                }
-        )(differenceInHours(Date.now(), getTime(code.updatedAt)));
+        return validTime(
+          differenceInHours(Date.now(), getTime(code.updatedAt)),
+          code
+        );
       }
     } catch (error) {
+      console.log(error);
       return { message: "Internal server error", valid: false };
+    }
+  },
+  clearToken: async user => {
+    try {
+      return await Reset.findOneAndUpdate(
+        { user },
+        { token: "", description: "You has changed your password..!" }
+      );
+    } catch (error) {
+      console.log(error);
+      return { message: "Internal server error" };
     }
   }
 };

@@ -1,6 +1,6 @@
 import User from "./userModel";
 import ResetController from "../password-reset/passwordResetController";
-import { tryCatch, __, map } from "ramda";
+import { tryCatch, __, map, pipe } from "ramda";
 import bcrypt from "bcrypt";
 import uuidV4 from "uuid/v4";
 import jwt from "jsonwebtoken";
@@ -10,7 +10,10 @@ import handleError from "../../usefull/errorHandler";
 const transformData = transform({ _id: "id" }, ["password"])(__);
 
 const handleQuery = data =>
-  tryCatch(user => user, error => handleError.serverError(500, error))(data);
+  tryCatch(
+    user => user,
+    error => handleError.serverError(500, error)
+  )(data);
 
 const generateToken = data =>
   jwt.sign(data, process.env.JWT_SECRET, {
@@ -45,7 +48,6 @@ export default {
     //only to updated name and username
     try {
       const user = await User.findById(id).select("-password");
-      console.log(user);
       if (!user) {
         return null;
       }
@@ -69,21 +71,31 @@ export default {
   },
   login: async ({ username, password }) => {
     try {
+      console.log(password);
       const user = await User.findOne({ username });
-      if (user) {
-        if (bcrypt.compareSync(password, user.password)) {
-          const token = generateToken({ id: user._id });
-          return { user, token };
+      if (!user) {
+        return handleError.serverError(404, "User not found");
+      } else {
+        if (!bcrypt.compareSync(password, user.password)) {
+          return handleError.serverError(409, "Credential doesn't match");
+        } else {
+          return { user, token: generateToken({ id: user._id }) };
         }
-        return handleError.serverError(409, "Credential doesn't match");
       }
-      return handleError.serverError(404, "User not found");
     } catch (error) {
       console.log(error);
       return error;
     }
   },
   getUser: async where => {
+    try {
+      return User.findOne({ ...where }).select("-password");
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  },
+  getMe: async where => {
     try {
       return User.findOne({ ...where }).select("-password");
     } catch (error) {
@@ -104,6 +116,37 @@ export default {
     } catch (error) {
       console.log(error);
       return error;
+    }
+  },
+  recoverPassword: async ({ input }, { models }) => {
+    try {
+      console.log(input);
+      const ok = pipe(data => console.log(data))(
+        await models.Reset.getResetPasswordBeforeChange(input.token)
+      );
+      console.log(ok);
+      return {};
+    } catch (error) {
+      return handleError.serverError();
+    }
+  },
+  updatePasswordRecover: async input => {
+    try {
+      return pipe(async ({ user_id, valid }) => {
+        if (valid) {
+          await ResetController.clearToken(user_id);
+          const passw = hashPassword(input.password, 10);
+          return {
+            user: await User.findByIdAndUpdate(user_id, {
+              password: passw
+            }),
+            token: generateToken({ id: user_id })
+          };
+        }
+        return handleError.userInputError("no se ha podido actualiar");
+      })(await ResetController.getResetPasswordBeforeChange(input.token));
+    } catch (error) {
+      return handleError.serverError();
     }
   }
   // deleteUser: where => User.findOneAndDelete(where)

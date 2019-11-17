@@ -23,6 +23,19 @@ export default {
       } catch (error) {
         return handleError.serverError();
       }
+    },
+
+    getMe: async (root, args, { models, me }, info) => {
+      try {
+        if (typeof me === "undefined" || !me) {
+          return handleError.authenticationError();
+        }
+        console.log(me.id);
+        return await models.User.getUser({ _id: me.id });
+      } catch (error) {
+        // console.log(error);
+        return handleError.serverError();
+      }
     }
   },
 
@@ -60,6 +73,14 @@ export default {
       try {
         return await models.User.sendEmailToRecoverPassword(email);
       } catch (error) {
+        return handleError.serverError();
+      }
+    },
+    recoverPassword: async (root, { input }, { models }, info) => {
+      try {
+        return await models.User.updatePasswordRecover(input);
+      } catch (error) {
+        console.log(error);
         return handleError.serverError();
       }
     }
