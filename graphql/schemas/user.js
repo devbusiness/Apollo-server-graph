@@ -2,14 +2,14 @@ import { gql } from "apollo-server-express";
 export default gql`
   #Query#
 
-  type Query {
+  extend type Query {
     getUsers: [User]!
     getUser(id: ID!): User
   }
 
   #Muation#
 
-  type Mutation {
+  extend type Mutation {
     createUser(input: createUserInput!): userCreatedPayload!
     updateUser(input: updateUserInput!): User
     signin(input: signinInput): userCreatedPayload!
@@ -26,16 +26,6 @@ export default gql`
     email: String!
     createdAt: DateTime
     resetPassword: TokenPasswordReset
-    updatedAt: DateTime
-  }
-
-  type TokenPasswordReset implements Node {
-    _id: ID!
-    user: ID
-    times: Int
-    description: String
-    token: String
-    createdAt: DateTime
     updatedAt: DateTime
   }
 

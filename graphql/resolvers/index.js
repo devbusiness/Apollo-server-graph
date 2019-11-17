@@ -1,2 +1,3 @@
 import User from "./User";
-export default [User];
+import Reset from "./ResetPassword";
+export default [User, Reset];
