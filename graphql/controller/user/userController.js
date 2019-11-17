@@ -6,6 +6,7 @@ import uuidV4 from "uuid/v4";
 import jwt from "jsonwebtoken";
 import { transform } from "../../usefull";
 import handleError from "../../usefull/errorHandler";
+import SendEmail from "../../usefull/email";
 
 const transformData = transform({ _id: "id" }, ["password"])(__);
 
@@ -32,14 +33,16 @@ export default {
 
       await newUser.save();
 
+      await new SendEmail(newUser, "nosee.html").sendWelcome();
+      console.log("paso emial");
       const token = generateToken({ id: newUser._id });
 
       newUser.password = undefined;
-
-      console.log(newUser);
+      // console.log(emails);
 
       return { user: newUser, token };
     } catch (error) {
+      console.log(error);
       return { error };
     }
   },
@@ -120,7 +123,6 @@ export default {
   },
   recoverPassword: async ({ input }, { models }) => {
     try {
-      console.log(input);
       const ok = pipe(data => console.log(data))(
         await models.Reset.getResetPasswordBeforeChange(input.token)
       );

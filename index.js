@@ -1,12 +1,13 @@
 import { ApolloServer } from "apollo-server-express";
 import dotenv from "dotenv";
+import path from "path";
 import express from "express";
 import schemas from "./graphql/schemas";
 import resolvers from "./graphql/resolvers";
 import mongoose from "mongoose";
 import context from "./context";
 const config = dotenv.config();
-
+import cors from "cors";
 const app = express();
 const server = new ApolloServer({
   typeDefs: schemas,
@@ -23,6 +24,9 @@ const server = new ApolloServer({
   tracing: true
 });
 
+// app.use(cors());
+app.set("view engine", "pug");
+app.set("template", path.join(__dirname, "template", "./template"));
 server.applyMiddleware({ app, path: "/graphql" });
 
 mongoose
