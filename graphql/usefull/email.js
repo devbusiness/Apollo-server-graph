@@ -1,17 +1,17 @@
-import nodemailer from 'nodemailer';
-import pug from 'pug';
-import htmlToText from 'html-to-text';
+import nodemailer from "nodemailer";
+import pug from "pug";
+import htmlToText from "html-to-text";
 
 export default class SendEmail {
   constructor(user, url) {
     this.to = user.email;
-    this.firstName = user.name.split(' ')[0];
+    this.firstName = user.name.split(" ")[0];
     this.url = url;
     this.from = `Cesar Berrio Humanes<${process.env.EMAIL_FROM}>`;
   }
 
   newTransport() {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // Sendgrid
       // return nodemailer.createTransport({
       //   service: 'SendGrid',
@@ -42,7 +42,7 @@ export default class SendEmail {
   async send(template, subject) {
     // 1) Render HTML based on a pug template
     const html = pug.renderFile(
-      `${__dirname}/../template/email/${template}.pug`,
+      `${__dirname}/../../template/email/${template}.pug`,
       {
         firstName: this.firstName,
         url: this.url,
@@ -64,13 +64,13 @@ export default class SendEmail {
   }
 
   async sendWelcome() {
-    await this.send('welcome', 'Welcome to the My App Rest!');
+    await this.send("welcome", "Welcome to the My App Graphql..!");
   }
 
   async sendPasswordReset() {
     await this.send(
-      'passwordReset',
-      'Your password reset token (valid for only 24 hours)'
+      "passwordReset",
+      "Your password reset token (valid for only 24 hours)"
     );
   }
 }

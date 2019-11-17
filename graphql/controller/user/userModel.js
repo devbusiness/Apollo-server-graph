@@ -20,6 +20,10 @@ const User = new mongoose.Schema(
       type: String,
       required: [true, "los usuarios deben tener un email registrado"],
       unique: true
+    },
+    roles: {
+      type: Array,
+      required: [true, "los usuarios deben tener minimo un rol"]
     }
   },
   {

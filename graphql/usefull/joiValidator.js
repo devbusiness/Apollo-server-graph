@@ -21,7 +21,7 @@ const validations = {
       .label("!!Password don't match"),
     last_name: Joi.string()
   }),
-  userPrintUpdated: Joi.object({
+  userUpdated: Joi.object({
     name: Joi.string().required(),
     id: Joi.string(),
     username: Joi.string().required(),
@@ -35,7 +35,7 @@ const validations = {
     ),
     last_name: Joi.string()
   }),
-  userPrintSignin: Joi.object({
+  userSignin: Joi.object({
     password: Joi.string().required(),
     username: Joi.string().required()
   })

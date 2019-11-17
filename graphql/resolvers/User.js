@@ -1,11 +1,6 @@
-import jwt from "jsonwebtoken";
 import { pipe, __ } from "ramda";
-// import validateShema from "../controller/user/validationSchema";
-import Joi from ".././usefull/joiValidator";
 import Reset from "../controller/password-reset/passwordResetController";
-import bcrypt from "bcrypt";
 import handleError from "../usefull/errorHandler";
-import errorHandler from "../usefull/errorHandler";
 
 export default {
   Query: {
@@ -42,22 +37,19 @@ export default {
   Mutation: {
     createUser: async (root, { input }, { models }) => {
       try {
-        // const validate = Joi(input, "userSave");
-        // if (validate !== null) {
-        //   return errorHandler.userInputError(validate);
-        // }
         const user = await models.User.createUser(input);
-        console.log(user);
         return user;
       } catch (error) {
-        console.log(error);
+        return { error };
       }
     },
     updateUser: async (root, { input }, { models, me }) => {
       try {
+        if (typeof me === "undefined" || !me) {
+          return handleError.authenticationError();
+        }
         return await models.User.updateUser(me.id, input);
       } catch (error) {
-        console.log(error);
         return { status: false, error };
       }
     },
@@ -81,6 +73,18 @@ export default {
         return await models.User.updatePasswordRecover(input);
       } catch (error) {
         console.log(error);
+        return handleError.serverError();
+      }
+    },
+    updatePassword: async (root, { input }, { models, me }, info) => {
+      try {
+        if (typeof me === "undefined" || me === {}) {
+          return handleError.authenticationError();
+        }
+        const ok = await models.User.updatePassword(me.id, input);
+        console.log(ok);
+        return ok;
+      } catch (error) {
         return handleError.serverError();
       }
     }

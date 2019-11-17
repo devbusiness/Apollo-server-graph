@@ -1,20 +1,14 @@
 import User from "./userModel";
 import ResetController from "../password-reset/passwordResetController";
-import { tryCatch, __, map, pipe } from "ramda";
+import { __, pipe } from "ramda";
 import bcrypt from "bcrypt";
 import uuidV4 from "uuid/v4";
 import jwt from "jsonwebtoken";
-import { transform } from "../../usefull";
+// import { transform } from "../../usefull";
 import handleError from "../../usefull/errorHandler";
 import SendEmail from "../../usefull/email";
-
-const transformData = transform({ _id: "id" }, ["password"])(__);
-
-const handleQuery = data =>
-  tryCatch(
-    user => user,
-    error => handleError.serverError(500, error)
-  )(data);
+// import handleError from "../usefull/errorHandler";
+// const transformData = transform({ _id: "id" }, ["password"])(__);
 
 const generateToken = data =>
   jwt.sign(data, process.env.JWT_SECRET, {
@@ -34,15 +28,13 @@ export default {
       await newUser.save();
 
       await new SendEmail(newUser, "nosee.html").sendWelcome();
-      console.log("paso emial");
+
       const token = generateToken({ id: newUser._id });
 
       newUser.password = undefined;
-      // console.log(emails);
 
       return { user: newUser, token };
     } catch (error) {
-      console.log(error);
       return { error };
     }
   },
@@ -74,7 +66,6 @@ export default {
   },
   login: async ({ username, password }) => {
     try {
-      console.log(password);
       const user = await User.findOne({ username });
       if (!user) {
         return handleError.serverError(404, "User not found");
@@ -114,10 +105,13 @@ export default {
       }
       const token = uuidV4() + uuidV4();
       const description = "peticion desde el email";
-      const data = { token, description, user: user._id };
-      return ResetController.createReset(data);
+      new SendEmail(user, "reset-token.html").sendPasswordReset();
+      return ResetController.createReset({
+        token,
+        description,
+        user: user._id
+      });
     } catch (error) {
-      console.log(error);
       return error;
     }
   },
@@ -148,6 +142,34 @@ export default {
         return handleError.userInputError("no se ha podido actualiar");
       })(await ResetController.getResetPasswordBeforeChange(input.token));
     } catch (error) {
+      return handleError.serverError();
+    }
+  },
+  updatePassword: async (id, data) => {
+    try {
+      return pipe(async user => {
+        if (!comparePassw(data.current, user.password)) {
+          return handleError.serverError(
+            400,
+            "Your current password does't match..!"
+          );
+        } else if (data.password !== data.passwordConfirm) {
+          return handleError.userInputError("The passwords doesn't match..!");
+        } else if (data.current === data.password) {
+          return handleError.userInputError(
+            "That password you can't use now..!"
+          );
+        } else {
+          const password = hashPassword(data.password);
+          const userUpdated = await User.findByIdAndUpdate(user._id, {
+            password
+          });
+          const token = generateToken({ id: user._id });
+          return { token, user: userUpdated };
+        }
+      })(await User.findById(id).select("+password"));
+    } catch (error) {
+      console.log(error);
       return handleError.serverError();
     }
   }

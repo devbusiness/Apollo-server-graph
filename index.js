@@ -26,7 +26,6 @@ const server = new ApolloServer({
 
 // app.use(cors());
 app.set("view engine", "pug");
-app.set("template", path.join(__dirname, "template", "./template"));
 server.applyMiddleware({ app, path: "/graphql" });
 
 mongoose

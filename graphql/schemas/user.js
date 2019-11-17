@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-express";
+import gql from "graphql-tag";
 export default gql`
   #Query#
 
@@ -16,6 +16,7 @@ export default gql`
     signin(input: signinInput): userCreatedPayload!
     SendEmailToRecoverPassword(email: String!): TokenPasswordReset!
     recoverPassword(input: RecoverPasswordInput!): userCreatedPayload!
+    updatePassword(input: UpdatePasswordInput!): userCreatedPayload!
   }
   #types#
 
@@ -27,6 +28,7 @@ export default gql`
     password: String
     email: String!
     createdAt: DateTime
+    roles: [String]
     resetPassword: TokenPasswordReset
     updatedAt: DateTime
   }
@@ -44,6 +46,7 @@ export default gql`
     username: String!
     password: String!
     email: String!
+    roles: [Roles!]!
     confirmPassword: String!
   }
 
@@ -52,17 +55,19 @@ export default gql`
     newPassword: String!
     password: String!
   }
+  input UpdatePasswordInput {
+    current: String!
+    password: String!
+    passwordConfirm: String!
+  }
 
   input signinInput {
     username: String!
     password: String!
   }
   input updateUserInput {
-    id: ID!
     name: String
     last_name: String
     username: String
-    # password: String
-    # confirmPassword: String
   }
 `;
