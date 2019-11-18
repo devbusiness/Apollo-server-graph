@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 // import { transform } from "../../usefull";
 import handleError from "../../usefull/errorHandler";
 import SendEmail from "../../usefull/email";
-// import handleError from "../usefull/errorHandler";
 // const transformData = transform({ _id: "id" }, ["password"])(__);
 
 const generateToken = data =>
@@ -29,7 +28,7 @@ export default {
 
       await new SendEmail(newUser, "nosee.html").sendWelcome();
 
-      const token = generateToken({ id: newUser._id });
+      const token = generateToken({ id: newUser._id, roles: [newUser.roles] });
 
       newUser.password = undefined;
 
@@ -73,7 +72,10 @@ export default {
         if (!bcrypt.compareSync(password, user.password)) {
           return handleError.serverError(409, "Credential doesn't match");
         } else {
-          return { user, token: generateToken({ id: user._id }) };
+          return {
+            user,
+            token: generateToken({ id: user._id, roles: [user.roles] })
+          };
         }
       }
     } catch (error) {
@@ -132,11 +134,12 @@ export default {
         if (valid) {
           await ResetController.clearToken(user_id);
           const passw = hashPassword(input.password, 10);
+          const user = await User.findByIdAndUpdate(user_id, {
+            password: passw
+          });
           return {
-            user: await User.findByIdAndUpdate(user_id, {
-              password: passw
-            }),
-            token: generateToken({ id: user_id })
+            user,
+            token: generateToken({ id: user_id, roles: [user.roles] })
           };
         }
         return handleError.userInputError("no se ha podido actualiar");
@@ -164,7 +167,7 @@ export default {
           const userUpdated = await User.findByIdAndUpdate(user._id, {
             password
           });
-          const token = generateToken({ id: user._id });
+          const token = generateToken({ id: user._id, roles: user.roles });
           return { token, user: userUpdated };
         }
       })(await User.findById(id).select("+password"));

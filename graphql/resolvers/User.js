@@ -35,20 +35,27 @@ export default {
   },
 
   Mutation: {
-    createUser: async (root, { input }, { models }) => {
+    createUser: async (root, { input }, { models, pubSub }) => {
       try {
         const user = await models.User.createUser(input);
+
+        pubSub.publish("userAdd", {
+          newUser: user
+        });
+
         return user;
       } catch (error) {
         return { error };
       }
     },
-    updateUser: async (root, { input }, { models, me }) => {
+    updateUser: async (root, { input }, { models, me, pubSub }) => {
       try {
         if (typeof me === "undefined" || !me) {
           return handleError.authenticationError();
         }
-        return await models.User.updateUser(me.id, input);
+        const user = await models.User.updateUser(me.id, input);
+        pubSub.publish("user", { updatedUser: user });
+        return user;
       } catch (error) {
         return { status: false, error };
       }
@@ -86,6 +93,21 @@ export default {
         return ok;
       } catch (error) {
         return handleError.serverError();
+      }
+    }
+  },
+  Subscription: {
+    newUser: {
+      subscribe(parent, { user_id }, { models, pubSub }, info) {
+        console.log(user_id);
+        // console.log(await models.User.getUser({ _id: user_id }));
+        return pubSub.asyncIterator("userAdd");
+      }
+    },
+    updatedUser: {
+      subscribe(parent, { user_id }, { models, pubSub }, info) {
+        console.log(user_id);
+        return pubSub.asyncIterator("user");
       }
     }
   },

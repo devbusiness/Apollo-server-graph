@@ -18,7 +18,12 @@ export default gql`
     recoverPassword(input: RecoverPasswordInput!): userCreatedPayload!
     updatePassword(input: UpdatePasswordInput!): userCreatedPayload!
   }
-  #types#
+  #Subscription
+  extend type Subscription {
+    newUser: userCreatedPayload!
+    updatedUser(user_id: ID!): User!
+  }
+  # types#
 
   type User implements Node {
     _id: ID!

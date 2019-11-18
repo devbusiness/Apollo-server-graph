@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import models from "./graphql/controller";
+import { PubSub } from "graphql-subscriptions";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
+
+const pubSub = new PubSub();
 
 const getMe = async req => {
   const token = req.headers["authorization"]
@@ -16,12 +19,21 @@ const getMe = async req => {
     }
   }
 };
-const context = async ({ req }) => {
-  const me = await getMe(req);
-  return {
-    models,
-    me,
-    secret: process.env.JWT_SECRET
-  };
+const context = async ({ req, connection }) => {
+  if (connection) {
+    return {
+      models,
+      pubSub
+    };
+  }
+  if (req) {
+    const me = await getMe(req);
+    return {
+      models,
+      me,
+      pubSub,
+      secret: process.env.JWT_SECRET
+    };
+  }
 };
 export default context;
