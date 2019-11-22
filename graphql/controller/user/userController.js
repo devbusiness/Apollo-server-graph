@@ -1,9 +1,10 @@
 import User from "./userModel";
 import ResetController from "../password-reset/passwordResetController";
-import { __, pipe } from "ramda";
+import { pipe } from "ramda";
 import bcrypt from "bcrypt";
 import uuidV4 from "uuid/v4";
 import jwt from "jsonwebtoken";
+import CatchHandler from "../errorController";
 // import { transform } from "../../usefull";
 import handleError from "../../usefull/errorHandler";
 import SendEmail from "../../usefull/email";
@@ -16,7 +17,6 @@ const generateToken = data =>
 
 const hashPassword = passw => bcrypt.hashSync(passw, 10);
 const comparePassw = (input, saved) => bcrypt.compareSync(input, saved);
-
 export default {
   createUser: async input => {
     try {
@@ -34,7 +34,7 @@ export default {
 
       return { user: newUser, token };
     } catch (error) {
-      return { error };
+      return { error: CatchHandler(error) };
     }
   },
 
@@ -50,7 +50,7 @@ export default {
       );
       return upated;
     } catch (error) {
-      return { error };
+      return { error: CatchHandler(error) };
     }
   },
   getUsers: async () => {
@@ -60,7 +60,7 @@ export default {
         .select("-password")
         .lean();
     } catch (error) {
-      return error;
+      return { error: CatchHandler(error) };
     }
   },
   login: async ({ username, password }) => {
@@ -80,24 +80,21 @@ export default {
         }
       }
     } catch (error) {
-      console.log(error);
-      return error;
+      return { error: CatchHandler(error) };
     }
   },
   getUser: async where => {
     try {
       return User.findOne({ ...where }).select("-password");
     } catch (error) {
-      console.log(error);
-      return error;
+      return { error: CatchHandler(error) };
     }
   },
   getMe: async where => {
     try {
       return User.findOne({ ...where }).select("-password");
     } catch (error) {
-      console.log(error);
-      return error;
+      return { error: CatchHandler(error) };
     }
   },
   sendEmailToRecoverPassword: async where => {
@@ -115,7 +112,7 @@ export default {
         user: user._id
       });
     } catch (error) {
-      return error;
+      return { error: CatchHandler(error) };
     }
   },
   recoverPassword: async ({ input }, { models }) => {
@@ -126,7 +123,7 @@ export default {
       console.log(ok);
       return {};
     } catch (error) {
-      return handleError.serverError();
+      return { error: CatchHandler(error) };
     }
   },
   updatePasswordRecover: async input => {
@@ -146,7 +143,7 @@ export default {
         return handleError.userInputError("no se ha podido actualiar");
       })(await ResetController.getResetPasswordBeforeChange(input.token));
     } catch (error) {
-      return handleError.serverError();
+      return { error: CatchHandler(error) };
     }
   },
   updatePassword: async (id, data) => {
@@ -173,8 +170,7 @@ export default {
         }
       })(await User.findById(id).select("+password"));
     } catch (error) {
-      console.log(error);
-      return handleError.serverError();
+      return { error: CatchHandler(error) };
     }
   },
   disableUser: async id => {
@@ -193,8 +189,7 @@ export default {
             : "You has been disabled..!"
       };
     } catch (error) {
-      console.log(error);
-      return handleError.serverError(500, "server imternal error..!");
+      return { error: CatchHandler(error) };
     }
   }
 };

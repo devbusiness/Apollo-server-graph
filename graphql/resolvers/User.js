@@ -25,6 +25,7 @@ export default {
     ),
     getUser: combineResolvers(
       isAuthenticated,
+
       async (root, { id }, { models }) => {
         try {
           return await models.User.getUser({ _id: id });
@@ -40,7 +41,6 @@ export default {
         try {
           return await models.User.getUser({ _id: me.id });
         } catch (error) {
-          // console.log(error);
           return handleError.serverError();
         }
       }
@@ -55,7 +55,7 @@ export default {
         pubSub.publish("userAdd", {
           newUser: user
         });
-
+        console.log(user);
         return user;
       } catch (error) {
         return { error };
@@ -73,13 +73,24 @@ export default {
         }
       }
     ),
-    DeleteMe: combineResolvers(
+    disableMe: combineResolvers(
       isAuthenticated,
       async (root, args, { models, me }) => {
         try {
           const user = await models.User.disableUser(me.id);
 
           return user;
+        } catch (error) {
+          return { error };
+        }
+      }
+    ),
+    disableUser: combineResolvers(
+      isAuthenticated,
+      onlyAdmin,
+      async (root, { user_id }, { models, me }) => {
+        try {
+          return await models.User.disableUser(user_id);
         } catch (error) {
           return { error };
         }
@@ -136,8 +147,7 @@ export default {
   },
   Subscription: {
     newUser: {
-      subscribe(parent, { user_id }, { models, pubSub }, info) {
-        console.log(user_id);
+      subscribe(parent, args, { pubSub }, info) {
         // console.log(await models.User.getUser({ _id: user_id }));
         return pubSub.asyncIterator("userAdd");
       }

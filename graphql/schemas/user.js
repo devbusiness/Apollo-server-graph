@@ -13,7 +13,8 @@ export default gql`
   extend type Mutation {
     createUser(input: createUserInput!): userCreatedPayload!
     updateMe(input: updateMeInput!): User
-    DeleteMe: DeleteMePayload!
+    disableMe: DeleteMePayload!
+    disableUser(user_id: ID!): DeleteMePayload!
     updateUser(input: updateUserInput!): User
     signin(input: signinInput): userCreatedPayload!
     SendEmailToRecoverPassword(email: String!): TokenPasswordReset!
@@ -43,6 +44,7 @@ export default gql`
   type userCreatedPayload {
     user: User
     token: String
+    error: String
   }
 
   type UserConnection {
@@ -63,13 +65,13 @@ export default gql`
   # inputs #
 
   input createUserInput {
-    name: String!
+    name: String
     last_name: String
-    username: String!
-    password: String!
-    email: String!
-    roles: [Roles!]!
-    confirmPassword: String!
+    username: String
+    password: String
+    email: String
+    roles: [Roles!]
+    confirmPassword: String
   }
 
   input RecoverPasswordInput {
