@@ -1,7 +1,8 @@
 import {
   ApolloError,
   UserInputError,
-  AuthenticationError
+  AuthenticationError,
+  ForbiddenError
 } from "apollo-server-express";
 export default {
   serverError: (code, message) =>
@@ -13,5 +14,7 @@ export default {
         invalidArgs: validate
       }
     ),
-  authenticationError: () => new authenticationError()
+  authenticationError: () =>
+    new AuthenticationError("your credentials isn't correct..!"),
+  forbiddenError: () => new ForbiddenError("this route is proctected..!")
 };

@@ -24,6 +24,11 @@ const User = new mongoose.Schema(
     roles: {
       type: Array,
       required: [true, "los usuarios deben tener minimo un rol"]
+    },
+    disabled: {
+      type: Boolean,
+      disabled: [true, "todos los usuarios deben de tener un diabled"],
+      default: false
     }
   },
   {

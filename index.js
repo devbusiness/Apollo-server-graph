@@ -28,7 +28,6 @@ const server = new ApolloServer({
     path: "/subscriptions",
     keepAlive: 10 * (60 * 3600)
   },
-
   introspection: true,
   tracing: true
 });

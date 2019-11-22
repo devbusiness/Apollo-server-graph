@@ -28,7 +28,7 @@ export default {
 
       await new SendEmail(newUser, "nosee.html").sendWelcome();
 
-      const token = generateToken({ id: newUser._id, roles: [newUser.roles] });
+      const token = generateToken({ id: newUser._id, roles: newUser.roles });
 
       newUser.password = undefined;
 
@@ -70,11 +70,12 @@ export default {
         return handleError.serverError(404, "User not found");
       } else {
         if (!bcrypt.compareSync(password, user.password)) {
-          return handleError.serverError(409, "Credential doesn't match");
+          return handleError.authenticationError();
         } else {
+          user.password = null;
           return {
             user,
-            token: generateToken({ id: user._id, roles: [user.roles] })
+            token: generateToken({ id: user._id, roles: user.roles })
           };
         }
       }
@@ -139,7 +140,7 @@ export default {
           });
           return {
             user,
-            token: generateToken({ id: user_id, roles: [user.roles] })
+            token: generateToken({ id: user_id, roles: user.roles })
           };
         }
         return handleError.userInputError("no se ha podido actualiar");
@@ -175,6 +176,25 @@ export default {
       console.log(error);
       return handleError.serverError();
     }
+  },
+  disableUser: async id => {
+    try {
+      const user = await User.findById(id);
+      if (!user) {
+        return handleError.serverError(400, "user not found..!");
+      }
+      await user.update({ disabled: !user.disabled });
+      const saved = await user.save();
+      return {
+        disabled: !user.disabled,
+        message:
+          user.disabled === true
+            ? "you has been enabled..!"
+            : "You has been disabled..!"
+      };
+    } catch (error) {
+      console.log(error);
+      return handleError.serverError(500, "server imternal error..!");
+    }
   }
-  // deleteUser: where => User.findOneAndDelete(where)
 };
