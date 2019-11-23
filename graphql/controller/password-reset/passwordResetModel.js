@@ -1,18 +1,21 @@
 import mongoose, { Schema } from "mongoose";
-
+import validator from "validator";
 const ResetPassword = new mongoose.Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
       required: [true, "los usuarios deben estar "],
-      unique: true
+      unique: true,
+      validate: validator.isMongoId
     },
     description: {
-      type: String
+      type: String,
+      validate: validator.isAlpha
     },
     times: {
       type: Number,
-      required: true
+      required: true,
+      validate: validator.isNumeric
     },
     token: {
       type: String,

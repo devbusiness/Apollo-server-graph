@@ -15,6 +15,7 @@ const server = new ApolloServer({
   typeDefs: schemas,
   resolvers,
   context,
+
   playground: {
     settings: {
       "editor.cursorShape": "line",
