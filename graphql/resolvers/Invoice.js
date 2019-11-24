@@ -8,17 +8,21 @@ import {
 import { combineResolvers } from "graphql-resolvers";
 export default {
   Query: {
-    getInvoice: async (parent, { id }, { models }, info) => {
-      try {
-        const invoice = await models.Invoice.getInvoice(id);
-        console.log(invoice);
-        return invoice;
-      } catch (error) {
-        console.log(error);
-        return { error };
+    getInvoice: combineResolvers(
+      isAuthenticated,
+      async (parent, { id }, { models }, info) => {
+        try {
+          const invoice = await models.Invoice.getInvoice(id);
+          console.log(invoice);
+          return invoice;
+        } catch (error) {
+          console.log(error);
+          return { error };
+        }
       }
-    },
+    ),
     getInvoices: combineResolvers(
+      isAuthenticated,
       async (parent, { limit, offset }, { models }, info) => {
         try {
           const { invoice, counted, error } = await models.Invoice.getInvoices(
@@ -60,7 +64,7 @@ export default {
     // ),
 
     cancelInvoice: combineResolvers(
-      // isSeller,
+      isSeller,
       async (parent, { id }, { models, me }, info) => {
         try {
           return await models.Invoice.CancelInvoice(id);
@@ -70,15 +74,18 @@ export default {
         }
       }
     ),
-    createInvoice: async (parent, { input }, { models, me }, info) => {
-      try {
-        const invoice = await models.Invoice.createInvoice(input);
-        return { invoice };
-      } catch (error) {
-        console.log(error);
-        return { error };
+    createInvoice: combineResolvers(
+      isSeller,
+      async (parent, { input }, { models, me }, info) => {
+        try {
+          const invoice = await models.Invoice.createInvoice(input);
+          return { invoice };
+        } catch (error) {
+          console.log(error);
+          return { error };
+        }
       }
-    }
+    )
   },
   Subscription: {},
   Invoice: {
