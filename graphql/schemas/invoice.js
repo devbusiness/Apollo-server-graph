@@ -26,6 +26,11 @@ export default gql`
     pageInfo: PageInfo
     error: String
   }
+  enum Status {
+    Active
+    Canceled
+    Sold
+  }
   type DetailInvoice {
     _id: ID!
     product: Product
@@ -45,6 +50,7 @@ export default gql`
     total: Float!
     details: [DetailInvoiceInpt]!
     seller: ID!
+    status: Status
     customer: ID!
   }
 
