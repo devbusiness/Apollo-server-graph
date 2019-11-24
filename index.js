@@ -53,7 +53,7 @@ mongoose
     useFindAndModify: false
   })
   .then(() => {
-    serv.listen(process.env.PORT, () => {
+    serv.listen(process.env.PORT || 5000, () => {
       console.log(
         `🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
       );
