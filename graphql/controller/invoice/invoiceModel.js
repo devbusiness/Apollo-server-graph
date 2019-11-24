@@ -30,6 +30,11 @@ const Invoice = new mongoose.Schema(
     total: {
       type: Number,
       required: [true, "el total es requerido"]
+    },
+    status: {
+      type: String,
+      enum: ["Active", "Canceled", "Sold"],
+      default: "Active"
     }
   },
   {

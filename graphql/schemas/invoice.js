@@ -3,10 +3,11 @@ import gql from "graphql-tag";
 export default gql`
   extend type Query {
     getInvoices(limit: Int, offset: Int): InvoiceConnection!
+    getInvoice(id: ID!): InvoiceCreatedPayload!
   }
   extend type Mutation {
     createInvoice(input: CreateInvoiceInput!): InvoiceCreatedPayload!
-    ## deleteInvoice(id: ID!): InvoicetPayload!
+    cancelInvoice(id: ID!): InvoiceCreatedPayload!
     ## updateInvoice(input: UpdateInvoiceInput!): InvoicetPayload
   }
 
@@ -18,6 +19,7 @@ export default gql`
     customer: User
     total: Float!
     details: [DetailInvoice]!
+    status: String
   }
   type InvoiceConnection implements Connection {
     edges: [Invoice!]

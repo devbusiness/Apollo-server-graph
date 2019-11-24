@@ -21,29 +21,39 @@ export default {
       return { error: CatchHandler(error) };
     }
   },
-  updateInvoice: async (id, data) => {
+  // updateInvoice: async (id, data) => {
+  //   try {
+  //     const invoice = await Invoice.findByIdAndUpdate(id, { details: data });
+
+  //     return { Invoice };
+  //   } catch (error) {
+  //     return { error };
+  //   }
+  // },
+  CancelInvoice: async id => {
     try {
-      const Invoice = await Invoice.findByIdAndUpdate(id, data);
-      invoiceModel;
-      return { Invoice };
+      const invoice = await Invoice.findByIdAndRemove(id, {
+        status: "Canceled"
+      });
+      invoice.details.map(async sub => {
+        const prod = await productController.getProduct({ _id: sub.product });
+        const newValue = prod.product.stock + sub.stock;
+        await productController.updateProduct(sub.product, {
+          stock: newValue
+        });
+      });
+
+      return { invoice };
     } catch (error) {
-      return { error };
-    }
-  },
-  deleteInvoice: async id => {
-    try {
-      return { Invoice: await Invoice.findByIdAndRemove(id) };
-    } catch (error) {
-      console.log(error);
       return { error };
     }
   },
   getInvoice: async id => {
     try {
-      return { Invoice: await Invoice.findById(id) };
+      return { invoice: await Invoice.findById(id) };
     } catch (error) {
       console.log(error);
-      return { error };
+      return { error: CatchHandler(error) };
     }
   },
   getInvoices: async (limit, offset) => {

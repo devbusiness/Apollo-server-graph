@@ -9,18 +9,18 @@ import { combineResolvers } from "graphql-resolvers";
 import { makeTraceDetails } from "apollo-engine-reporting/dist/extension";
 export default {
   Query: {
-    // getInvoices: async (parent, args, { models }, info) => {
-    //   try {
-    //     const invoice = await models.Invoice.getInvoices();
-    //     return invoice;
-    //   } catch (error) {
-    //     console.log(error);
-    //     return { error };
-    //   }
-    // }
+    getInvoice: async (parent, { id }, { models }, info) => {
+      try {
+        const invoice = await models.Invoice.getInvoice(id);
+        console.log(invoice);
+        return invoice;
+      } catch (error) {
+        console.log(error);
+        return { error };
+      }
+    },
     getInvoices: combineResolvers(
       async (parent, { limit, offset }, { models }, info) => {
-        console.log(limit);
         try {
           const { invoice, counted, error } = await models.Invoice.getInvoices(
             limit,
@@ -47,8 +47,8 @@ export default {
     )
   },
   Mutation: {
-    // updateProduct: combineResolvers(
-    //   isSeller,
+    // updateInvoice: combineResolvers(
+    //   // isSeller,
     //   async (parent, { input }, { models, me }, info) => {
     //     try {
     //       const data = { ...input, id: null };
@@ -60,17 +60,17 @@ export default {
     //   }
     // ),
 
-    // deleteProduct: combineResolvers(
-    //   isSeller,
-    //   async (parent, { id }, { models, me }, info) => {
-    //     try {
-    //       return await models.Product.deleteProduct(id);
-    //     } catch (error) {
-    //       console.log(error);
-    //       return { error };
-    //     }
-    //   }
-    // ),
+    cancelInvoice: combineResolvers(
+      // isSeller,
+      async (parent, { id }, { models, me }, info) => {
+        try {
+          return await models.Invoice.CancelInvoice(id);
+        } catch (error) {
+          console.log(error);
+          return { error };
+        }
+      }
+    ),
     createInvoice: async (parent, { input }, { models, me }, info) => {
       try {
         const invoice = await models.Invoice.createInvoice(input);
