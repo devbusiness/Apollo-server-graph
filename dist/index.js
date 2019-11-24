@@ -60,7 +60,7 @@ _mongoose["default"].connect(uriDB, {
   useCreateIndex: true,
   useFindAndModify: false
 }).then(function () {
-  serv.listen(process.env.PORT, function () {
+  serv.listen(process.env.PORT || 5000, function () {
     console.log("\uD83D\uDE80 Server ready at http://localhost:".concat(process.env.PORT).concat(server.graphqlPath));
     console.log("\uD83D\uDE80 Subscriptions ready at ws://localhost:".concat(process.env.PORT).concat(server.subscriptionsPath));
   });
