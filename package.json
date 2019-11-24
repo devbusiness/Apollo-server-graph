@@ -8,7 +8,8 @@
     "dev": "nodemon --exec babel-node index.js",
     "start": "npm run prod",
     "prod": "node ./dist/index.js",
-    "build": "babel ../graphql-server --out-dir ./dist"
+    "build": "npm run prod",
+    "build:new": "babel ../graphql-server --out-dir ./dist"
   },
   "author": "Cesar Berrio",
   "license": "ISC",
