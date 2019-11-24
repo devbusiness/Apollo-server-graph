@@ -41,12 +41,12 @@ server.applyMiddleware({ app });
 
 const serv = createServer(app);
 server.installSubscriptionHandlers(serv);
-const uriDB =
-  process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev"
-    ? process.env.MongoUriLocal
-    : process.env.MongoUriCluster;
+// const uriDB =
+//   process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev"
+//     ? process.env.MongoUriLocal
+//     : process.env.MongoUriCluster;
 mongoose
-  .connect(uriDB, {
+  .connect(process.env.MongoUriCluster, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -54,7 +54,7 @@ mongoose
   })
   .then(() => {
     serv.listen(process.env.PORT || 5000, () => {
-      console.log(
+      serv.console.log(
         `🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
       );
       console.log(
