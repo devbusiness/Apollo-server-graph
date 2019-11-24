@@ -1,5 +1,5 @@
 import Product from "./productsModel";
-
+import CatchHandler from "../errorController";
 export default {
   createProduct: async data => {
     try {
@@ -7,16 +7,15 @@ export default {
       return { product };
     } catch (error) {
       console.log({ error });
-      return { error };
+      return { error: CatchHandler(error) };
     }
   },
   updateProduct: async (id, data) => {
     try {
       const product = await Product.findByIdAndUpdate(id, data);
-      console.log(product);
+
       return { product };
     } catch (error) {
-      console.log(error);
       return { error };
     }
   },
@@ -28,20 +27,24 @@ export default {
       return { error };
     }
   },
-  getProduct: async where => {
+  getProduct: async id => {
     try {
-      return { product: await Product.findOne({ ...where }) };
+      return { product: await Product.findOne({ _id: id }) };
     } catch (error) {
       console.log(error);
       return { error };
     }
   },
-  getProducts: async () => {
+  getProducts: async (limit, offset) => {
     try {
-      return { product: await Product.find({}) };
+      const counted = await Product.countDocuments();
+      const products = await Product.find()
+        .skip(offset)
+        .limit(limit);
+      return { products, counted };
     } catch (error) {
       console.log(error);
-      return { error };
+      return { error: CatchHandler(error) };
     }
   }
 };

@@ -6,6 +6,8 @@ export default error => {
       errmsg = `duplicate field value ${value} : please use another value`;
     } else if (error.name === "CastError") {
       errmsg = `invalid ${error.path}: ${error.value}`;
+    } else if (error.code === 2) {
+      errmsg = `invalid ${error.errmsg}`;
     }
   } else if (error.name === "ValidationError") {
     console.log(error);

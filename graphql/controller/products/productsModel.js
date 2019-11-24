@@ -7,7 +7,6 @@ const Product = new mongoose.Schema(
       lowercase: true,
       required: true,
       maxlength: 60
-      // validate: [validator.i, "Solo deben ser letras"]
     },
     ref: {
       type: String,
@@ -22,17 +21,14 @@ const Product = new mongoose.Schema(
     price: {
       type: Number,
       required: [true, "el precio es requerido"]
-      // validate: [validator.isDecimal, "el precio debe ser decimal"]
     },
     iva: {
       type: Number,
       required: [true, "el iva es requerido"]
-      // validate: [validator.isDecimal, "el precio debe ser decimal"]
     },
     stock: {
       type: Number,
       required: [true, "el stock es requerido"]
-      // validate: [val validator.isNumeric, "el stock debe ser numerico"]
     }
   },
   {

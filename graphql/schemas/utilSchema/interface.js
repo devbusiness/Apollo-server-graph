@@ -6,4 +6,7 @@ export default gql`
     createdAt: DateTime
     updatedAt: DateTime
   }
+  interface Connection {
+    pageInfo: PageInfo
+  }
 `;

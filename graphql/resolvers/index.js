@@ -6,4 +6,5 @@ const customScalarResolver = {
 import User from "./User";
 import Reset from "./ResetPassword";
 import Product from "./Product";
-export default [User, Reset, Product, customScalarResolver];
+import Invoice from "./Invoice";
+export default [User, Reset, Product, Invoice, customScalarResolver];

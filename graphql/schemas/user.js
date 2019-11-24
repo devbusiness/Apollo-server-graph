@@ -47,16 +47,11 @@ export default gql`
     error: String
   }
 
-  type UserConnection {
+  type UserConnection implements Connection {
     edges: [User!]!
     pageInfo: PageInfo!
   }
 
-  type PageInfo {
-    endCursor: Date!
-    hasNextPage: Boolean!
-    total: Int!
-  }
   type DeleteMePayload {
     disabled: Boolean
     message: String

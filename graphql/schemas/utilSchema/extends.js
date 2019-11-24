@@ -7,6 +7,14 @@ export default gql`
   enum Roles {
     User
     Admin
-    Other
+    Seller
+    Client
+  }
+  type PageInfo {
+    endCursor: Date!
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+    pages: Int!
+    total: Int!
   }
 `;
