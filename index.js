@@ -41,10 +41,16 @@ server.applyMiddleware({ app });
 
 const serv = createServer(app);
 server.installSubscriptionHandlers(serv);
+const uriDB =
+  process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev"
+    ? process.env.MongoUriLocal
+    : process.env.MongoUriCluster;
 mongoose
-  .connect(process.env.MongoUriLocal, {
+  .connect(uriDB, {
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
   })
   .then(() => {
     serv.listen(process.env.PORT, () => {

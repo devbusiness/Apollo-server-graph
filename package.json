@@ -5,14 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node index.js"
+    "dev": "nodemon --exec babel-node index.js",
+    "start": "npm run build & node ./dist/index.js",
+    "prod": "node ./dist/index.js",
+    "build": "babel ../graphql-server --out-dir ./dist"
   },
   "author": "Cesar Berrio",
   "license": "ISC",
   "dependencies": {
     "@babel/cli": "^7.6.4",
+    "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/polyfill": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
+    "@babel/runtime": "^7.7.4",
     "apollo-server": "^2.9.9",
     "apollo-server-express": "^2.9.7",
     "bcrypt": "^3.0.6",

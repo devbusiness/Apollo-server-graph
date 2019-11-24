@@ -6,7 +6,6 @@ import {
   isValidData
 } from "./middleware";
 import { combineResolvers } from "graphql-resolvers";
-import { makeTraceDetails } from "apollo-engine-reporting/dist/extension";
 export default {
   Query: {
     getInvoice: async (parent, { id }, { models }, info) => {
