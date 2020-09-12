@@ -33,7 +33,7 @@
     "html-to-text": "^5.1.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.7",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "nodemailer": "^6.3.1",
     "pug": "^2.0.4",
     "ramda": "^0.26.1",
